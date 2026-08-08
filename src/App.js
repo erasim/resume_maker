@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import { initialData } from './data/defaults';
 import EditorPanel from './components/EditorPanel';
 import ResumePreview from './components/ResumePreview';
+import AuthScreen from './components/AuthScreen';
 import './App.css';
 
 const THEMES = [
@@ -21,14 +22,15 @@ const LAYOUTS = [
   { id: 'sidebar-right', label: 'Sidebar right', cls: 'sidebar-right' },
 ];
 
-const DATA_KEY = 'resumeforge-data';
-const SETTINGS_KEY = 'resumeforge-settings';
+const AUTH_KEY = 'resumeforge-auth';
+const dataKey = (user) => `resumeforge-data-${user}`;
+const settingsKey = (user) => `resumeforge-settings-${user}`;
 
 const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
-function loadData() {
+function loadData(username) {
   try {
-    const raw = localStorage.getItem(DATA_KEY);
+    const raw = localStorage.getItem(dataKey(username));
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object' && parsed.personal && Array.isArray(parsed.experience)) {
@@ -41,9 +43,9 @@ function loadData() {
   return clone(initialData);
 }
 
-function loadSettings() {
+function loadSettings(username) {
   try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
+    const raw = localStorage.getItem(settingsKey(username));
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object') return parsed;
@@ -97,35 +99,78 @@ function ExcelIcon() {
   );
 }
 
+function LogoutIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
 export default function App() {
-  const [data, setData] = useState(loadData);
-  const [accent, setAccent] = useState(loadSettings().accent || THEMES[0].color);
-  const [layout, setLayout] = useState(loadSettings().layout || 'classic');
+  const [user, setUser] = useState(() => {
+    try {
+      return localStorage.getItem(AUTH_KEY) || '';
+    } catch (e) {
+      return '';
+    }
+  });
+  const [data, setData] = useState(() => loadData(user));
+  const [accent, setAccent] = useState(() => loadSettings(user).accent || THEMES[0].color);
+  const [layout, setLayout] = useState(() => loadSettings(user).layout || 'classic');
   const fileRef = useRef(null);
 
   const update = (section, patch) => setData((d) => ({ ...d, [section]: patch }));
 
   useEffect(() => {
+    if (!user) return;
     try {
-      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+      localStorage.setItem(dataKey(user), JSON.stringify(data));
     } catch (e) {
       // storage unavailable — resume simply won't persist
     }
-  }, [data]);
+  }, [data, user]);
 
   useEffect(() => {
+    if (!user) return;
     try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ accent, layout }));
+      localStorage.setItem(settingsKey(user), JSON.stringify({ accent, layout }));
     } catch (e) {
       // ignore
     }
-  }, [accent, layout]);
+  }, [accent, layout, user]);
 
-  const handleReset = () => {
+  const handleLogin = (username) => {
     try {
-      localStorage.removeItem(DATA_KEY);
+      localStorage.setItem(AUTH_KEY, username);
     } catch (e) {
       // ignore
+    }
+    setUser(username);
+    setData(loadData(username));
+    setAccent(loadSettings(username).accent || THEMES[0].color);
+    setLayout(loadSettings(username).layout || 'classic');
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem(AUTH_KEY);
+    } catch (e) {
+      // ignore
+    }
+    setUser('');
+    setData(clone(initialData));
+  };
+
+  const handleReset = () => {
+    if (user) {
+      try {
+        localStorage.removeItem(dataKey(user));
+      } catch (e) {
+        // ignore
+      }
     }
     setData(clone(initialData));
   };
@@ -239,6 +284,14 @@ export default function App() {
     XLSX.writeFile(wb, 'resume-data.xlsx');
   };
 
+  if (!user) {
+    return (
+      <div className="app auth-app" style={{ '--accent': accent }}>
+        <AuthScreen onLogin={handleLogin} />
+      </div>
+    );
+  }
+
   return (
     <div className="app" style={{ '--accent': accent }}>
       <input ref={fileRef} type="file" accept="application/json,.json,.xlsx,.xls" onChange={handleImportFile} style={{ display: 'none' }} />
@@ -252,6 +305,13 @@ export default function App() {
           </div>
         </div>
         <div className="header-actions">
+          <span className="user-chip" title={`Signed in as ${user}`}>
+            <span className="user-avatar">{user.charAt(0).toUpperCase()}</span>
+            {user}
+          </span>
+          <button className="btn-ghost" onClick={handleLogout}>
+            <LogoutIcon /> Log out
+          </button>
           <div className="layout-picker" title="Layout">
             {LAYOUTS.map((l) => (
               <button
