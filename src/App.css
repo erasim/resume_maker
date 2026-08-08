@@ -971,6 +971,121 @@
   grid-template-columns: 64% 36%;
 }
 
+/* ---------- To-Do list ---------- */
+
+.todo-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.todo-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 99px;
+  background: #eef2f7;
+  overflow: hidden;
+}
+
+.todo-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), #7c3aed);
+  transition: width 0.3s ease;
+}
+
+.todo-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.todo-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  background: #fcfdff;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.todo-item:hover {
+  border-color: #e2e8f0;
+}
+
+.todo-item.done {
+  background: #f8fafc;
+}
+
+.todo-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.todo-label input[type='checkbox'] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.todo-text {
+  font-size: 13.5px;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.todo-item.done .todo-text {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.todo-empty {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.todo-add {
+  display: flex;
+  gap: 6px;
+}
+
+.todo-add input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 8px 10px;
+  font-size: 13.5px;
+  background: #f8fafc;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.todo-add input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
 /* ---------- Print ---------- */
 
 @page {
