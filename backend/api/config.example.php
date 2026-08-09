@@ -1,20 +1,15 @@
 <?php
 // ------------------------------------------------------------------
-// ResumeForge API config
+// ResumeForge API config (EXAMPLE — copy to config.php and edit)
 // ------------------------------------------------------------------
-// Edit these four values with the credentials from the InfinityFree
-// control panel  ->  MySQL Databases.
+// 1. Copy this file to config.php
+// 2. Edit the four $db* values with your MySQL credentials
 // ------------------------------------------------------------------
 
-// $dbHost = 'sqlXXX.infinityfree.com';  // e.g. sql110.infinityfree.com
-// $dbName = 'if0_XXXXXXX_resume';  // database name
-// $dbUser = 'if0_XXXXXXX';              // database user
-// $dbPass = 'YOUR_DB_PASSWORD';         // database password
-
-$dbHost = 'Localhost';  // e.g. sql110.infinityfree.com
-$dbName = 'resumeforge';  // database name
-$dbUser = 'root';              // database user
-$dbPass = '';         // database password
+$dbHost = 'Localhost';            // e.g. sql110.infinityfree.com
+$dbName = 'resumeforge';          // database name
+$dbUser = 'root';                 // database user
+$dbPass = '';                     // database password
 
 // ------------------------------------------------------------------
 // CORS - allow the GitHub Pages frontend to call this API

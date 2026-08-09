@@ -21,5 +21,8 @@
 
 npm-start.log
 npm-debug.log*
+
+# credentials
+backend/api/config.php
 yarn-debug.log*
 yarn-error.log*
