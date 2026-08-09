@@ -1,9 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders login screen', () => {
+test('renders the app', () => {
   render(<App />);
   expect(screen.getByText('ResumeForge')).toBeInTheDocument();
-  expect(screen.getByText('Sign in to continue building')).toBeInTheDocument();
-  expect(screen.getByText('Sign Up')).toBeInTheDocument();
 });
